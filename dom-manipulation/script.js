@@ -107,7 +107,6 @@ function createAddQuoteForm() {
 }
 createAddQuoteForm(); // call this after all your function definitions
 
-createAddQuoteForm();
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 document.getElementById("importQuotes").addEventListener("change", importFromJsonFile);
 document.getElementById("exportQuotes").addEventListener("click", exportToJsonFile);
@@ -196,5 +195,7 @@ function mergeQuotes(serverQuotes) {
     alert("New quotes synced from server.");
   }
 }
+
 setInterval(fetchQuotesFromServer, 30000); // 30 seconds
+
 
