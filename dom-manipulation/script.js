@@ -164,3 +164,37 @@ function filterQuotes() {
 populateCategories();
 
 filterQuotes();
+
+function fetchQuotesFromServer() {
+  fetch('https://jsonplaceholder.typicode.com/posts')
+    .then(response => response.json())
+    .then(data => {
+      const serverQuotes = data.slice(0, 5).map(post => ({
+        text: post.title,
+        category: "Server"
+      }));
+
+      // Simulate merging logic
+      mergeQuotes(serverQuotes);
+    })
+    .catch(error => console.error("Error fetching quotes from server:", error));
+}
+
+function mergeQuotes(serverQuotes) {
+  let updated = false;
+  serverQuotes.forEach(serverQuote => {
+    const exists = quotes.some(localQuote => localQuote.text === serverQuote.text);
+    if (!exists) {
+      quotes.push(serverQuote);
+      updated = true;
+    }
+  });
+
+  if (updated) {
+    localStorage.setItem("quotes", JSON.stringify(quotes));
+    populateCategories();
+    alert("New quotes synced from server.");
+  }
+}
+setInterval(fetchQuotesFromServer, 30000); // 30 seconds
+
