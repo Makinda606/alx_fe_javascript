@@ -192,7 +192,15 @@ function mergeQuotes(serverQuotes) {
   if (updated) {
     localStorage.setItem("quotes", JSON.stringify(quotes));
     populateCategories();
-    alert("New quotes synced from server.");
+
+    // Show update in the UI instead of alert
+    const syncStatus = document.getElementById("syncStatus");
+    syncStatus.textContent = "Quotes synced from server.";
+    
+    // Clear the message after a few seconds
+    setTimeout(() => {
+      syncStatus.textContent = "";
+    }, 5000);
   }
 }
 
