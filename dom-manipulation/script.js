@@ -197,7 +197,7 @@ async function syncQuotes(serverQuotes) {
     localStorage.setItem("quotes", JSON.stringify(quotes));
     populateCategories();
     filterQuotes();
-    notifyUser("Quotes synced from server.");
+    notifyUser("Quotes synced with server!");
   }
 }
 
