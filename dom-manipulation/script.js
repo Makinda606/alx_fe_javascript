@@ -37,7 +37,9 @@ async function addQuote() {
   if (newText && newCategory) {
     const newQuote = { text: newText, category: newCategory };
     quotes.push(newQuote);
-    localStorage.setItem("quotes", JSON.stringify(quotes)); // Save to localStorage
+    localStorage.setItem("quotes", JSON.stringify(quotes));
+
+    await postQuoteToServer(newQuote); // 👈 async post here
 
     textInput.value = "";
     categoryInput.value = "";
@@ -45,7 +47,6 @@ async function addQuote() {
   } else {
     alert("Please fill in both fields.");
   }
-  await postQuoteToServer(newQuote);
 }
 
 // Export quotes to a JSON file
@@ -206,7 +207,7 @@ async function postQuoteToServer(quote) {
       method: 'POST',
       body: JSON.stringify(quote),
       headers: {
-        'Content-type': 'application/json; charset=UTF-8',
+        'Content-Type': 'application/json; charset=UTF-8',
       },
     });
 
@@ -227,6 +228,7 @@ function notifyUser(message) {
   notice.style.padding = "10px";
   notice.style.margin = "10px 0";
   notice.style.fontWeight = "bold";
+  notice.style.borderRadius = "4px";
 
   document.body.insertBefore(notice, document.body.firstChild);
 
@@ -235,3 +237,4 @@ function notifyUser(message) {
   }, 5000);
 }
 
+setInterval(fetchQuotesFromServer, 30000); // 30 seconds
