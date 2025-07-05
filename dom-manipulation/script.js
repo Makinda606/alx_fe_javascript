@@ -45,6 +45,7 @@ function addQuote() {
   } else {
     alert("Please fill in both fields.");
   }
+  postQuoteToServer(newQuote);
 }
 
 // Export quotes to a JSON file
@@ -172,15 +173,14 @@ function fetchQuotesFromServer() {
         text: post.title,
         category: "Server"
       }));
-
-      // Simulate merging logic
-      mergeQuotes(serverQuotes);
+      syncQuotes(serverQuotes); // 👈 We'll rename from mergeQuotes
     })
     .catch(error => console.error("Error fetching quotes from server:", error));
 }
 
-function mergeQuotes(serverQuotes) {
+function syncQuotes(serverQuotes) {
   let updated = false;
+
   serverQuotes.forEach(serverQuote => {
     const exists = quotes.some(localQuote => localQuote.text === serverQuote.text);
     if (!exists) {
@@ -192,18 +192,44 @@ function mergeQuotes(serverQuotes) {
   if (updated) {
     localStorage.setItem("quotes", JSON.stringify(quotes));
     populateCategories();
-
-    // Show update in the UI instead of alert
-    const syncStatus = document.getElementById("syncStatus");
-    syncStatus.textContent = "Quotes synced from server.";
-    
-    // Clear the message after a few seconds
-    setTimeout(() => {
-      syncStatus.textContent = "";
-    }, 5000);
+    filterQuotes();
+    notifyUser("Quotes synced from server.");
   }
+}
+
+function postQuoteToServer(quote) {
+  fetch('https://jsonplaceholder.typicode.com/posts', {
+    method: 'POST',
+    body: JSON.stringify(quote),
+    headers: {
+      'Content-type': 'application/json; charset=UTF-8',
+    },
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log("Posted to server:", data);
+  })
+  .catch(error => {
+    console.error("Error posting quote to server:", error);
+  });
 }
 
 setInterval(fetchQuotesFromServer, 30000); // 30 seconds
 
+function notifyUser(message) {
+  const notice = document.createElement("div");
+  notice.textContent = message;
+  notice.style.backgroundColor = "#fff3cd";
+  notice.style.border = "1px solid #ffeeba";
+  notice.style.color = "#856404";
+  notice.style.padding = "10px";
+  notice.style.margin = "10px 0";
+  notice.style.fontWeight = "bold";
+
+  document.body.insertBefore(notice, document.body.firstChild);
+
+  setTimeout(() => {
+    notice.remove();
+  }, 5000);
+}
 
